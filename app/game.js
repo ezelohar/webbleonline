@@ -66,7 +66,8 @@ peggle.prototype.create = function () {
 	
 	PeggleGame.shutter = this.game.add.sprite(504, 100, 'shutter');
 	PeggleGame.shutter.anchor.setTo(0.5, 0.5);
-	PeggleGame.shutter.collideWorldBounds = true;
+	PeggleGame.shutter.body.collideWorldBounds = true;
+        PeggleGame.shutter.body.gravity.y = 6;
 	
 	//Set bounce (on bounce element contiune with 90% of current speed
 	PeggleGame.shutter.body.bounce.setTo(0.9, 0.9);
@@ -97,13 +98,14 @@ peggle.prototype.update = function () {
     //if the ball is moving, remove all info texts if there are any
 
     //collide the ball with the walls
-    this.game.physics.collide(PeggleGame.shutter, PeggleGame.elements.webbles, function () {
-		console.log('?');
+    this.game.physics.collide(PeggleGame.shutter, PeggleGame.elements.webbles, function (shutter, ball) {
+		PeggleGame.hitBall(shutter, ball);
 	}, null, this);
 
     //Check if the ball is moving so slow that we can make it stop completly and switch to swing-mode
     if (Math.abs(PeggleGame.shutter.body.velocity.x) < PeggleGame.shutter.body.minVelocity.x && Math.abs(PeggleGame.shutter.body.velocity.y) < PeggleGame.shutter.body.minVelocity.y) {
       PeggleGame.isMoving = false;
+	  PeggleGame.createArrow();
     }
 
   } else if (PeggleGame.isMoving == false) {
@@ -134,6 +136,7 @@ peggle.prototype.appendBalls = function () {
 		
 		var currentBall = this.elements.webbles.create(x, y, 'ball-unhit');
 		currentBall.body.immovable = true;
+		currentBall.body.setCircle(8, 8, 8);
 	}
 }
 
@@ -156,7 +159,18 @@ peggle.prototype.removeArrow = function () {
 /* actions */
 peggle.prototype.leftClick = function () {
 	this.shutter.body.velocity = this.game.physics.accelerationFromRotation(this.elements.arrow.rotation - Math.PI/2, 300);
+	this.removeArrow();
+	
 	this.isMoving = true;
+}
+
+
+/* Coallision */
+peggle.prototype.hitBall = function (shutter, ball) {
+	console.log(shutter);
+	console.log(ball);
+	
+	
 }
 
 
